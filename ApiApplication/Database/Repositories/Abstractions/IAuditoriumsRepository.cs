@@ -1,8 +1,8 @@
-﻿using ApiApplication.Database.Entities;
+﻿using Lodgify.Api.Database.Entities;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ApiApplication.Database.Repositories.Abstractions
+namespace Lodgify.Api.Database.Repositories.Abstractions
 {
     public interface IAuditoriumsRepository
     {

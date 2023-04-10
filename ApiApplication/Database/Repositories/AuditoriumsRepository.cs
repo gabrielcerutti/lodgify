@@ -1,10 +1,10 @@
-﻿using ApiApplication.Database.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Threading;
-using ApiApplication.Database.Repositories.Abstractions;
+using Lodgify.Api.Database.Entities;
+using Lodgify.Api.Database.Repositories.Abstractions;
 
-namespace ApiApplication.Database.Repositories
+namespace Lodgify.Api.Database.Repositories
 {
     public class AuditoriumsRepository : IAuditoriumsRepository
     {

@@ -1,4 +1,4 @@
-﻿namespace ApiApplication.Database.Entities
+﻿namespace Lodgify.Api.Database.Entities
 {
     public class SeatEntity
     {

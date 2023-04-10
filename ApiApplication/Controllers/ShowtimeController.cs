@@ -1,37 +1,33 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Lodgify.Api.Application.Commands;
+using Lodgify.Api.Application.Extensions;
 
-namespace WebApi.Controllers
+namespace Lodgify.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class ShowtimeController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
+        private readonly IMediator _mediator;
         private readonly ILogger<ShowtimeController> _logger;
 
-        public ShowtimeController(ILogger<ShowtimeController> logger)
+        public ShowtimeController(IMediator mediator, ILogger<ShowtimeController> logger)
         {
-            _logger = logger;
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [Route("create")]
+        [HttpPost]
+        public async Task<ActionResult<ShowtimeDTO>> CreateShowtimeAsync([FromBody] CreateShowtimeCommand createShowtimeCommand)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            _logger.LogInformation(
+                "----- Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                createShowtimeCommand.GetGenericTypeName(),
+                nameof(createShowtimeCommand.MovieId),
+                createShowtimeCommand.MovieId,
+                createShowtimeCommand);
+
+            return await _mediator.Send(createShowtimeCommand);
         }
     }
 }

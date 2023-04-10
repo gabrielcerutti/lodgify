@@ -1,15 +1,8 @@
-using ApiApplication.Database;
-using ApiApplication.Database.Repositories;
-using ApiApplication.Database.Repositories.Abstractions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Lodgify.Api.Database;
+using Lodgify.Api.Database.Repositories;
+using Lodgify.Api.Database.Repositories.Abstractions;
+using Lodgify.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +21,13 @@ builder.Services.AddDbContext<CinemaContext>(options =>
         .EnableSensitiveDataLogging()
         .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
 });
-//builder.Services.AddGrpc();
+builder.Services.AddSingleton<ICache, RedisCache>();
+builder.Services.AddSingleton<IMoviesApi, MoviesApi>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IShowtimesRepository>());
 
 //Application middlewares pipeline setup
 var app = builder.Build();

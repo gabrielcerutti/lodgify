@@ -1,13 +1,13 @@
-﻿using ApiApplication.Database.Entities;
+﻿using Lodgify.Api.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApiApplication.Database
+namespace Lodgify.Api.Database
 {
     public class CinemaContext : DbContext
     {
         public CinemaContext(DbContextOptions<CinemaContext> options) : base(options)
         {
-            
+
         }
 
         public DbSet<AuditoriumEntity> Auditoriums { get; set; }

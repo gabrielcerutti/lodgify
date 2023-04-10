@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ApiApplication.Database.Entities
+namespace Lodgify.Api.Database.Entities
 {
     public class MovieEntity
     {
