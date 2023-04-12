@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Threading;
-using Lodgify.Api.Database.Entities;
+﻿using Lodgify.Api.Database.Entities;
 using Lodgify.Api.Database.Repositories.Abstractions;
 
 namespace Lodgify.Api.Database.Repositories

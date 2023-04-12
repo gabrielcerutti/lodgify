@@ -1,3 +1,5 @@
+using Lodgify.Api.Application.Behaviors;
+using Lodgify.Api.Application.Exceptions;
 using Lodgify.Api.Database;
 using Lodgify.Api.Database.Repositories;
 using Lodgify.Api.Database.Repositories.Abstractions;
@@ -23,11 +25,15 @@ builder.Services.AddDbContext<CinemaContext>(options =>
 });
 builder.Services.AddSingleton<ICache, RedisCache>();
 builder.Services.AddSingleton<IMoviesApi, MoviesApi>();
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IShowtimesRepository>());
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TimingBehavior<,>));
 
 //Application middlewares pipeline setup
 var app = builder.Build();

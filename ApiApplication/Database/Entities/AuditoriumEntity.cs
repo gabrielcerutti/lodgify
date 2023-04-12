@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Lodgify.Api.Database.Entities
+﻿namespace Lodgify.Api.Database.Entities
 {
     public class AuditoriumEntity
     {

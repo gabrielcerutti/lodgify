@@ -4,45 +4,42 @@ using Lodgify.Api.Database.Repositories.Abstractions;
 using Lodgify.Api.Infrastructure;
 
 // Regular CommandHandler
-public class CreateShowtimeCommandHandler : IRequestHandler<CreateShowtimeCommand, ShowtimeDTO>
+public class BuySeatsCommandHandler : IRequestHandler<BuySeatsCommand, BuySeatsDTO>
 {
     private readonly IMoviesApi _moviesApi;
     private readonly IShowtimesRepository _showtimesRepository;
     private readonly ILogger<CreateShowtimeCommandHandler> _logger;
 
     // Using DI to inject infrastructure persistence Repositories
-    public CreateShowtimeCommandHandler(IMoviesApi moviesApi, IShowtimesRepository showtimesRepository, ILogger<CreateShowtimeCommandHandler> logger)
+    public BuySeatsCommandHandler(IMoviesApi moviesApi, IShowtimesRepository showtimesRepository, ILogger<CreateShowtimeCommandHandler> logger)
     {
         _moviesApi = moviesApi ?? throw new ArgumentNullException(nameof(moviesApi));
         _showtimesRepository = showtimesRepository ?? throw new ArgumentNullException(nameof(showtimesRepository));        
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<ShowtimeDTO> Handle(CreateShowtimeCommand message, CancellationToken cancellationToken)
+    public async Task<BuySeatsDTO> Handle(BuySeatsCommand message, CancellationToken cancellationToken)
     {        
-        var movieDetails = await _moviesApi.GetByIdAsync(message.MovieId);
-        var showtime = new ShowtimeEntity
-        {
-            SessionDate = message.SessionDate,
-            AuditoriumId = message.AuditoriumId,
-            Movie = new MovieEntity
-            {
-                Title = movieDetails.Title,
-                ImdbId = movieDetails.Id,
-                ReleaseDate = new DateTime(int.Parse(movieDetails.Year), 1, 1),
-                Stars = movieDetails.Crew,
-            },
-        };
+        //var showtime = await _showtimesRepository.GetWithTicketsByIdAsync(message.ShowtimeId, cancellationToken);
 
-        _logger.LogInformation("----- Creating Showtime - Movie: {@Movie}", movieDetails.Title);
+        //var show = new MovieEntity
+        //{
+        //    Title = movie.Title,
+        //    ImdbId = movie.Id,
+        //    ReleaseDate = new DateTime(int.Parse(movie.Year), 1, 1),
+        //    Stars = movie.Rank,
+        //};
+        //var showtime = new ShowtimeEntity(show, message.SessionDate, message.AuditoriumId);
 
-        showtime = await _showtimesRepository.CreateShowtime(showtime, cancellationToken);
+        //_logger.LogInformation("----- Creating Showtime - Movie: {@Movie}", movie);
 
-        return ShowtimeDTO.FromShowtime(showtime);
+        //showtime = await _showtimesRepository.CreateShowtime(showtime, cancellationToken);
+
+        return new BuySeatsDTO();
     }
 }
 
-public record ShowtimeDTO
+public record BuySeatsDTO
 {
     public int Id { get; set; }
     public int MovieId { get; set; }

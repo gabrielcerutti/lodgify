@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Lodgify.Api.Database.Entities
+﻿namespace Lodgify.Api.Database.Entities
 {
     public class TicketEntity
     {
