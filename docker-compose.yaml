@@ -10,9 +10,34 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx
+    networks:
+      - lodgify-network
+      
   cache:
     image: "redis"
     container_name: redis-cache
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks:
+      - lodgify-network
+  
+  seq:
+    image: datalust/seq
+    container_name: seq-logs
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5341:80"
+    healthcheck:
+        test: wget -q --tries=1 -O- http://localhost:5341/
+        interval: 3s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
+    networks:
+      - lodgify-network
+
+networks:
+  lodgify-network:
+    name: lodgify-network

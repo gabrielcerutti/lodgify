@@ -8,12 +8,12 @@ namespace Lodgify.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("[controller]")]
-    public class CinemaController : ControllerBase
+    public class ShowtimeController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<CinemaController> _logger;
+        private readonly ILogger<ShowtimeController> _logger;
 
-        public CinemaController(IMediator mediator, ILogger<CinemaController> logger)
+        public ShowtimeController(IMediator mediator, ILogger<ShowtimeController> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -34,7 +34,7 @@ namespace Lodgify.Api.Controllers
         }
 
         [Route("reserve")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<ReserveSeatsDTO>> ReserveSeats([FromBody] ReserveSeatsCommand reserveSeatsCommand)
         {
             _logger.LogInformation(
@@ -45,6 +45,20 @@ namespace Lodgify.Api.Controllers
                 reserveSeatsCommand);
 
             return await _mediator.Send(reserveSeatsCommand);
+        }
+
+        [Route("buy")]
+        [HttpPut]
+        public async Task<ActionResult<BuySeatsDTO>> BuySeats([FromBody] BuySeatsCommand buySeatsCommand)
+        {
+            _logger.LogInformation(
+                "----- Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                buySeatsCommand.GetGenericTypeName(),
+                nameof(buySeatsCommand.ReserveId),
+                buySeatsCommand.ReserveId,
+                buySeatsCommand);
+
+            return await _mediator.Send(buySeatsCommand);
         }
     }
 }

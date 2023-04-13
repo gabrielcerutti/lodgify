@@ -18,6 +18,12 @@ public class ReserveSeatsCommand : IRequest<ReserveSeatsDTO>
 
 public record SeatDTO
 {
+    public SeatDTO(short row, short seatNumber)
+    {
+        Row = row;
+        SeatNumber = seatNumber;
+    }
+
     public short Row { get; set; }
     public short SeatNumber { get; set; }
 }

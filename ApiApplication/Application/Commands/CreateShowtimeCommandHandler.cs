@@ -3,14 +3,12 @@ using Lodgify.Api.Database.Entities;
 using Lodgify.Api.Database.Repositories.Abstractions;
 using Lodgify.Api.Infrastructure;
 
-// Regular CommandHandler
 public class CreateShowtimeCommandHandler : IRequestHandler<CreateShowtimeCommand, ShowtimeDTO>
 {
     private readonly IMoviesApi _moviesApi;
     private readonly IShowtimesRepository _showtimesRepository;
     private readonly ILogger<CreateShowtimeCommandHandler> _logger;
 
-    // Using DI to inject infrastructure persistence Repositories
     public CreateShowtimeCommandHandler(IMoviesApi moviesApi, IShowtimesRepository showtimesRepository, ILogger<CreateShowtimeCommandHandler> logger)
     {
         _moviesApi = moviesApi ?? throw new ArgumentNullException(nameof(moviesApi));
@@ -34,7 +32,7 @@ public class CreateShowtimeCommandHandler : IRequestHandler<CreateShowtimeComman
             },
         };
 
-        _logger.LogInformation("----- Creating Showtime - Movie: {@Movie}", movieDetails.Title);
+        _logger.LogInformation("Creating Showtime - Movie: {@Movie}", movieDetails.Title);
 
         showtime = await _showtimesRepository.CreateShowtime(showtime, cancellationToken);
 

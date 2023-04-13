@@ -13,7 +13,7 @@ public class TimingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, T
         var stopwatch = Stopwatch.StartNew();
         var response = await next();
         stopwatch.Stop();
-        _logger.LogInformation("----- Command {CommandName} handled - response: {@Response} - Execution time {Elapsed}", request.GetGenericTypeName(), response, stopwatch.Elapsed);
+        _logger.LogInformation("----- Command {CommandName} handled - Execution time {Elapsed} - response: {@Response}", request.GetGenericTypeName(), stopwatch.Elapsed, response);        
 
         return response;
     }

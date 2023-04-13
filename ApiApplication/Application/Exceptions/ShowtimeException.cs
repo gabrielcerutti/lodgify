@@ -3,16 +3,16 @@
 /// <summary>
 /// Exception type for domain exceptions
 /// </summary>
-public class CinemaException : Exception
+public class ShowtimeException : Exception
 {
-    public CinemaException()
+    public ShowtimeException()
     { }
 
-    public CinemaException(string message)
+    public ShowtimeException(string message)
         : base(message)
     { }
 
-    public CinemaException(string message, Exception innerException)
+    public ShowtimeException(string message, Exception innerException)
         : base(message, innerException)
     { }
 }

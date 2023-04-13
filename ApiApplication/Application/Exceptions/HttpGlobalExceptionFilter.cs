@@ -21,7 +21,7 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
             context.Exception,
             context.Exception.Message);
 
-        if (context.Exception.GetType() == typeof(CinemaException))
+        if (context.Exception.GetType() == typeof(ShowtimeException))
         {
             var problemDetails = new ValidationProblemDetails()
             {

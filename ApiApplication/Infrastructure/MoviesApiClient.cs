@@ -48,22 +48,22 @@ namespace Lodgify.Api.Infrastructure
             var response = await client.GetByIdAsync(new IdRequest { Id = id });
             if (response.Success)
             {
-                _logger.LogInformation("----- Fetching movie from GRPC service - Movie: {@Id}", id);
+                _logger.LogInformation("Fetching movie from GRPC service - Movie: {@Id}", id);
                 response.Data.TryUnpack<showResponse>(out var data);
                 _cache.Set(id, data, TimeSpan.FromMinutes(5));                
                 return data;
             } else
             {
-                _logger.LogInformation("----- GRPC service failed, trying from cache..");
+                _logger.LogInformation("GRPC service failed, trying from cache..");
                 var cached = _cache.Get<showResponse>(id);
                 if (cached != null)
                 {
-                    _logger.LogInformation("----- Movie found in cache}");
+                    _logger.LogInformation("Movie found in cache}");
                     return cached;
                 }
                 else
                 {
-                    _logger.LogError("----- Movie {@Id} Not found", id);
+                    _logger.LogError("Movie {@Id} Not found", id);
                     throw new Exception($"MovieId {id} Not found");
                 }
             }
