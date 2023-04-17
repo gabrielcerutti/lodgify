@@ -1,10 +1,10 @@
-﻿using Lodgify.Api.Database.Entities;
+﻿using Showtime.Api.Database.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Lodgify.Api.Database.Repositories.Abstractions
+namespace Showtime.Api.Database.Repositories.Abstractions
 {
     public interface ITicketsRepository
     {

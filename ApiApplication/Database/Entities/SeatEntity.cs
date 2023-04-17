@@ -1,4 +1,4 @@
-﻿namespace Lodgify.Api.Database.Entities
+﻿namespace Showtime.Api.Database.Entities
 {
     public class SeatEntity
     {

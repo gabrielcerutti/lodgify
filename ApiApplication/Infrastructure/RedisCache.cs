@@ -1,4 +1,4 @@
-﻿namespace Lodgify.Api.Infrastructure
+﻿namespace Showtime.Api.Infrastructure
 {
     using System;
     using StackExchange.Redis;

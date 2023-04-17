@@ -1,8 +1,8 @@
-﻿using Lodgify.Api.Database.Entities;
-using Lodgify.Api.Database.Repositories.Abstractions;
+﻿using Showtime.Api.Database.Entities;
+using Showtime.Api.Database.Repositories.Abstractions;
 using System.Linq.Expressions;
 
-namespace Lodgify.Api.Database.Repositories
+namespace Showtime.Api.Database.Repositories
 {
     public class ShowtimesRepository : IShowtimesRepository
     {

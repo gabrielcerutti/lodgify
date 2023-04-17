@@ -1,4 +1,4 @@
-﻿namespace Lodgify.Api.Application.Commands;
+﻿namespace Showtime.Api.Application.Commands;
 
 [DataContract]
 public class ReserveSeatsCommand : IRequest<ReserveSeatsDTO>

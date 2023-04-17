@@ -1,32 +1,35 @@
 using Figgle;
-using Lodgify.Api.Application.Behaviors;
-using Lodgify.Api.Application.Exceptions;
-using Lodgify.Api.Database;
-using Lodgify.Api.Database.Repositories;
-using Lodgify.Api.Database.Repositories.Abstractions;
-using Lodgify.Api.Infrastructure;
+using Showtime.Api.Application.Behaviors;
+using Showtime.Api.Application.Exceptions;
+using Showtime.Api.Database;
+using Showtime.Api.Database.Repositories;
+using Showtime.Api.Database.Repositories.Abstractions;
+using Showtime.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Serilog;
+using FluentValidation;
+using Showtime.Api.Application.Validations;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .CreateLogger();
+    .CreateBootstrapLogger();
 
 try
 {
-    Console.WriteLine(FiggleFonts.Standard.Render("Lodgify Showtime API"));
+    Console.WriteLine(FiggleFonts.Standard.Render("Showtime API"));
     var builder = WebApplication.CreateBuilder(args);
     Log.Information("Starting web application");    
-
+    
     // Setup configuration sources.
     builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
-    builder.Logging.AddConsole();
-    var logger = new LoggerConfiguration()
-        .ReadFrom.Configuration(builder.Configuration)
-        .CreateLogger();
-    builder.Logging.AddSerilog(logger);
+    //builder.Host.UseSerilog();
+    builder.Host.UseSerilog((context, services, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+    //var logger = new LoggerConfiguration()
+    //    .ReadFrom.Configuration(builder.Configuration)
+    //    .CreateLogger();
+    //builder.Logging.AddSerilog(logger);
 
-    // Add services to the container.
+    // Add services to the container
     builder.Services.AddTransient<IShowtimesRepository, ShowtimesRepository>();
     builder.Services.AddTransient<ITicketsRepository, TicketsRepository>();
     builder.Services.AddTransient<IAuditoriumsRepository, AuditoriumsRepository>();
@@ -40,13 +43,15 @@ try
     builder.Services.AddSingleton<IMoviesApi, MoviesApi>();
     builder.Services.AddControllers(options =>
     {
-        options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+        options.Filters.Add(typeof(HttpGlobalExceptionFilter)); //This can also be achieved by using a middleware
     });
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddHttpClient();
     builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IShowtimesRepository>());
-    builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TimingBehavior<,>));
+    builder.Services.AddValidatorsFromAssemblyContaining<CreateShowtimeCommandValidator>();
+    builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TrackingBehavior<,>));
+    builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
 
     //Application middlewares pipeline setup
     var app = builder.Build();
@@ -55,9 +60,12 @@ try
     {
         app.UseDeveloperExceptionPage();
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options => 
+        {
+            options.SwaggerEndpoint("v1/swagger.json", "Showtime.API v1");
+        });
     }
-
+    app.UseSerilogRequestLogging();
     app.UseHttpsRedirection();
     app.UseRouting();
     app.UseAuthentication();

@@ -1,7 +1,7 @@
-﻿using Lodgify.Api.Database.Entities;
+﻿using Showtime.Api.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lodgify.Api.Database
+namespace Showtime.Api.Database
 {
     public class CinemaContext : DbContext
     {

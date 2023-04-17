@@ -1,8 +1,8 @@
-﻿namespace Lodgify.Api.Application.Commands;
+﻿namespace Showtime.Api.Application.Commands;
 
-using Lodgify.Api.Application.Exceptions;
-using Lodgify.Api.Database.Entities;
-using Lodgify.Api.Database.Repositories.Abstractions;
+using Showtime.Api.Application.Exceptions;
+using Showtime.Api.Database.Entities;
+using Showtime.Api.Database.Repositories.Abstractions;
 
 public class ReserveSeatsCommandHandler : IRequestHandler<ReserveSeatsCommand, ReserveSeatsDTO>
 {    
@@ -37,15 +37,17 @@ public class ReserveSeatsCommandHandler : IRequestHandler<ReserveSeatsCommand, R
         }
 
         //Check if all se   ats exist in the auditorium
-        if (!SeatsExistInAuditorium(auditorium, message.Seats))
+        var seatsExistInAuditorium = SeatsExistInAuditorium(auditorium, message.Seats);
+        if (!seatsExistInAuditorium.Valid)
         {
-            throw new ShowtimeException($"Some of the requested seats don't exist in the auditorium");
+            throw new ShowtimeException("Some of the selected seats dont's exist in the auditorium", seatsExistInAuditorium.Errors.ToArray());
         }
 
         // Check if the seats are available
-        if (!SeatsAreAvailable(showtimeWithTickets, message.Seats))
+        var seatsAreAvailable = SeatsAreAvailable(showtimeWithTickets, message.Seats);
+        if (!seatsAreAvailable.Valid)
         {
-            throw new ShowtimeException("Some of the requested seats are not available");
+            throw new ShowtimeException("Some of the selected seats are not available", seatsAreAvailable.Errors.ToArray());
         }
 
         // Reserve the seats
@@ -62,6 +64,8 @@ public class ReserveSeatsCommandHandler : IRequestHandler<ReserveSeatsCommand, R
             SessionDate = ticket.Showtime.SessionDate,
         };            
     }
+
+    #region Private Methods
 
     private bool AreSeatsContiguous(List<SeatDTO> seats)
     {
@@ -102,36 +106,41 @@ public class ReserveSeatsCommandHandler : IRequestHandler<ReserveSeatsCommand, R
             return false;
         }
 
-        _logger.LogInformation("Ok!");
+        _logger.LogInformation("Seats are contiguous!");
         // All seats are contiguous
         return true;
     }
 
-    private bool SeatsExistInAuditorium(AuditoriumEntity auditorium, IEnumerable<SeatDTO> seats)
+    private ValidationResult SeatsExistInAuditorium(AuditoriumEntity auditorium, IEnumerable<SeatDTO> seats)
     {
         _logger.LogInformation("Checking if seats exist in the auditorium");
+        var result = new ValidationResult();
         var auditoriumSeats = auditorium.Seats.ToList();
         foreach (var seat in seats)
         {
             var seatExists = auditoriumSeats.Exists(s => s.Row == seat.Row && s.SeatNumber == seat.SeatNumber);
             if (!seatExists)
             {
-                _logger.LogInformation($"Seat Row:{seat.Row} Number:{seat.SeatNumber} does not exist in auditorium");
-                return false;
+                var error = $"Seat Row:{seat.Row} Number:{seat.SeatNumber} does not exist in auditorium";
+                _logger.LogInformation(error);
+                result.Valid = false;
+                result.Errors.Add(error);
             }
         }
-        _logger.LogInformation("Ok!");
-        return true;
+        _logger.LogInformation("Seats exist in the auditorium!");
+        return result;
     }
 
-    private bool SeatsAreAvailable(ShowtimeEntity showtime, IEnumerable<SeatDTO> seats)
+    private ValidationResult SeatsAreAvailable(ShowtimeEntity showtime, IEnumerable<SeatDTO> seats)
     {
         _logger.LogInformation("Checking if seats are available");
+        var result = new ValidationResult();
         foreach (var ticket in showtime.Tickets)
         {
             var ticketSeats = ticket.Seats.ToList();
             foreach (var seat in seats)
             {
+                var error = string.Empty;
                 var ticketSeat = ticketSeats.SingleOrDefault(s => s.Row == seat.Row && s.SeatNumber == seat.SeatNumber);
                 if (ticketSeat != null) // The ticketSeat was already buyed or reserved
                 {
@@ -148,18 +157,31 @@ public class ReserveSeatsCommandHandler : IRequestHandler<ReserveSeatsCommand, R
                         else
                         {
                             // The ticketSeat was reserved for less than 10 minutes
-                            _logger.LogInformation($"Seat Row:{seat.Row} SeatNumber:{seat.SeatNumber} is not available");
-                            return false;
+                            error = $"Seat Row:{seat.Row} Number:{seat.SeatNumber} is not available";
+                            _logger.LogInformation(error);
+                            result.Valid = false;
+                            result.Errors.Add(error);
                         }
-                    } 
+                    }
                     // Seat was already buyed
-                    return false;
+                    error = $"Seat Row:{seat.Row} Number:{seat.SeatNumber} is not available";
+                    _logger.LogInformation(error);
+                    result.Valid = false;
+                    result.Errors.Add(error);
                 }
             }
         }
-        _logger.LogInformation("Ok!");
-        return true;
+        _logger.LogInformation("Seats are available!");
+        return result;
     }
+
+    private record ValidationResult
+    {
+        public bool Valid { get; set; } = true;
+        public IList<string> Errors { get; set; } = new List<string>();
+    }
+    
+    #endregion
 }
 
 public record ReserveSeatsDTO

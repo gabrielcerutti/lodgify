@@ -1,2 +1,89 @@
-Please add the cURLs of your tests here:
 
+echo "Creating a new showtime for movie ID-test1 in auditorium 1 at 2023-04-15T19:30:00"
+curl --location 'https://localhost:7629/Showtime/create' \
+--header 'Content-Type: application/json' \
+--data '{
+  "movieId": "ID-test1",
+  "sessionDate": "2023-04-15T19:30:00",
+  "auditoriumId": 1
+}'
+
+echo "Get the showtime with ID 2 created above" 
+curl --location --request GET 'https://localhost:7629/Showtime/2' \
+--header 'Content-Type: application/json' \
+--data '{
+  "movieId": "ID-test1",
+  "sessionDate": "2023-04-10T19:30:00",
+  "auditoriumId": 1
+}'
+
+echo "Reserve a seat - Seat row does not exist"
+curl --location --request PUT 'https://localhost:7629/Showtime/reserve' \
+--header 'Content-Type: application/json' \
+--data '{
+  "showtimeId": 2,
+  "seats": [
+    {
+      "row": 77,
+      "seatNumber": 1
+    }
+  ]
+}'
+
+echo "Reserve a seat - Seat number does not exist"
+curl --location --request PUT 'https://localhost:7629/Showtime/reserve' \
+--header 'Content-Type: application/json' \
+--data '{
+  "showtimeId": 2,
+  "seats": [
+    {
+      "row": 1,
+      "seatNumber": 77
+    }
+  ]
+}'
+
+echo "Reserve a seat - Seats are not contiguous"
+curl --location --request PUT 'https://localhost:7629/Showtime/reserve' \
+--header 'Content-Type: application/json' \
+--data '{
+  "showtimeId": 2,
+  "seats": [
+    {
+      "row": 1,
+      "seatNumber": 2
+    },
+    {
+      "row": 1,
+      "seatNumber": 3
+    },
+    {
+      "row": 2,
+      "seatNumber": 4
+    }
+  ]
+}'
+
+echo "Reserve a seat - Ok finally!"
+curl --location --request PUT 'https://localhost:7629/Showtime/reserve' \
+--header 'Content-Type: application/json' \
+--data '{
+  "showtimeId": 2,
+  "seats": [
+    {
+      "row": 1,
+      "seatNumber": 4
+    },
+    {
+      "row": 1,
+      "seatNumber": 5
+    },
+    {
+      "row": 1,
+      "seatNumber": 6
+    }
+  ]
+}'
+
+echo "Buy seats - Ok!"
+curl --location 'https://localhost:7629/Showtime/buy/${reserveId}

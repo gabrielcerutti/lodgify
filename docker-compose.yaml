@@ -1,5 +1,5 @@
 services:
-  api:
+  movies-api:
     image: lodgify/movies-api:3
     container_name: movies-api
     ports:
@@ -10,10 +10,40 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx
+      - FailurePercentage=0
     networks:
       - lodgify-network
+  
+  showtime-api:
+    image: lodgify/showtime-api:dev
+    container_name: showtime-api
+    build:
+      context: ./ApiApplication
+      dockerfile: Dockerfile
+    depends_on:
+      - movies-api
+      - redis-cache
+      - seq-logs
+    ports:
+      - "7628:80"
+      - "7629:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx # to use the certificate copied inside the docker image, this is not recomended
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx # to use the local dev certificate using the volume
+      - MoviesApi__BaseUrl=https://movies-api:443
+      - Redis__Host=redis-cache:6379
+      - Serilog__WriteTo__1__Args__serverUrl=http://seq-logs:5341
+    # volumes:
+      # - ~/.aspnet/https:/https:ro
+    networks:
+      - lodgify-network
+    # profiles:
+      # - donotstart
       
-  cache:
+  redis-cache:
     image: "redis"
     container_name: redis-cache
     restart: unless-stopped
@@ -22,7 +52,7 @@ services:
     networks:
       - lodgify-network
   
-  seq:
+  seq-logs:
     image: datalust/seq
     container_name: seq-logs
     environment:

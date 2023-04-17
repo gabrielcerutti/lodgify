@@ -1,7 +1,7 @@
-﻿using Lodgify.Api.Database.Entities;
-using Lodgify.Api.Database.Repositories.Abstractions;
+﻿using Showtime.Api.Database.Entities;
+using Showtime.Api.Database.Repositories.Abstractions;
 
-namespace Lodgify.Api.Database.Repositories
+namespace Showtime.Api.Database.Repositories
 {
     public class AuditoriumsRepository : IAuditoriumsRepository
     {

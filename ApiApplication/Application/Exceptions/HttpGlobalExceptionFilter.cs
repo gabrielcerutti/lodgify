@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 using System.Net;
 
-namespace Lodgify.Api.Application.Exceptions;
+namespace Showtime.Api.Application.Exceptions;
 
 public class HttpGlobalExceptionFilter : IExceptionFilter
 {
@@ -21,7 +22,7 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
             context.Exception,
             context.Exception.Message);
 
-        if (context.Exception.GetType() == typeof(ShowtimeException))
+        if (context.Exception is ShowtimeException showtimeException)
         {
             var problemDetails = new ValidationProblemDetails()
             {
@@ -32,6 +33,20 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
 
             problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
 
+            if(showtimeException.Errors.Length > 0)
+            {
+                problemDetails.Errors.Add("Errors", showtimeException.Errors);
+            }
+
+            if (context.Exception.InnerException is FluentValidation.ValidationException validationException)
+            {
+                var validationErrors = GetErrors(validationException);
+                // Add the validation errors to the details
+                foreach (var  validationError in validationErrors)
+                {
+                    problemDetails.Errors.Add(validationError.Key, validationError.Value);
+                }
+            }
             context.Result = new BadRequestObjectResult(problemDetails);
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         }
@@ -39,7 +54,7 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
         {
             var json = new JsonErrorResponse
             {
-                Messages = new[] { "An error has occured. Plesae, try it again." }
+                Messages = new[] { "Oops! An error has occured. Please, try it again." }
             };
 
             if (env.IsDevelopment())
@@ -54,6 +69,17 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
         context.ExceptionHandled = true;
+    }
+
+    private static IReadOnlyDictionary<string, string[]> GetErrors(FluentValidation.ValidationException exception)
+    {
+        var errors = exception.Errors.Where(x => x != null).GroupBy(x => x.PropertyName,
+                                            x => x.ErrorMessage, (propertyName, errorMessages) => new
+                                            {
+                                                Key = propertyName,
+                                                Values = errorMessages.Distinct().ToArray()
+                                            }).ToDictionary(x => x.Key, x => x.Values);    
+        return errors;
     }
 
     private class JsonErrorResponse

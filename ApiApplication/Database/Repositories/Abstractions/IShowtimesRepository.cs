@@ -1,11 +1,7 @@
-﻿using Lodgify.Api.Database.Entities;
-using System;
-using System.Collections.Generic;
+﻿using Showtime.Api.Database.Entities;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Lodgify.Api.Database.Repositories.Abstractions
+namespace Showtime.Api.Database.Repositories.Abstractions
 {
     public interface IShowtimesRepository
     {

@@ -1,9 +1,9 @@
 ﻿using Grpc.Net.Client;
-using Lodgify.Api.Application.Commands;
+using Showtime.Api.Application.Commands;
 using ProtoDefinitions;
 using System.Net.Http;
 
-namespace Lodgify.Api.Infrastructure
+namespace Showtime.Api.Infrastructure
 {
     public interface IMoviesApi
     {

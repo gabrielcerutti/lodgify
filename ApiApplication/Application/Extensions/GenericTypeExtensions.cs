@@ -1,4 +1,4 @@
-﻿namespace Lodgify.Api.Application.Extensions;
+﻿namespace Showtime.Api.Application.Extensions;
 
 public static class GenericTypeExtensions
 {

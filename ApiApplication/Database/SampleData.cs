@@ -1,6 +1,6 @@
-﻿using Lodgify.Api.Database.Entities;
+﻿using Showtime.Api.Database.Entities;
 
-namespace Lodgify.Api.Database
+namespace Showtime.Api.Database
 {
     public class SampleData
     {

@@ -1,7 +1,7 @@
-﻿namespace Lodgify.Api.Application.Commands;
+﻿namespace Showtime.Api.Application.Commands;
 
-using Lodgify.Api.Application.Exceptions;
-using Lodgify.Api.Database.Repositories.Abstractions;
+using Showtime.Api.Application.Exceptions;
+using Showtime.Api.Database.Repositories.Abstractions;
 
 public class BuySeatsCommandHandler : IRequestHandler<BuySeatsCommand, BuySeatsDTO>
 {    

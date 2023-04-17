@@ -1,7 +1,7 @@
-﻿namespace Lodgify.Api.Application.Commands;
-using Lodgify.Api.Database.Entities;
-using Lodgify.Api.Database.Repositories.Abstractions;
-using Lodgify.Api.Infrastructure;
+﻿namespace Showtime.Api.Application.Commands;
+using Showtime.Api.Database.Entities;
+using Showtime.Api.Database.Repositories.Abstractions;
+using Showtime.Api.Infrastructure;
 
 public class CreateShowtimeCommandHandler : IRequestHandler<CreateShowtimeCommand, ShowtimeDTO>
 {
@@ -18,6 +18,9 @@ public class CreateShowtimeCommandHandler : IRequestHandler<CreateShowtimeComman
 
     public async Task<ShowtimeDTO> Handle(CreateShowtimeCommand message, CancellationToken cancellationToken)
     {        
+        // Validate if showtime already exists
+        //TODO: We should validate if the showtime exists in the database for the given movie, auditorium and session date
+
         var movieDetails = await _moviesApi.GetByIdAsync(message.MovieId);
         var showtime = new ShowtimeEntity
         {
