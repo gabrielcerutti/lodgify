@@ -2,7 +2,7 @@
 
 ## Showtime API implementation details
 
-I tried to keep the API as simple as possible. I didn't want to add too many features that could distract from the main goal of the test.
+I tried to keep the API as simple as possible. I didn't want to add too many features that could distract from the main goal of the test. But I did add some features that I think are important for a production ready API, also I tried to follow some best practices and design patterns, clean code and SOLID principles.
 
 ### Run the API
 
